@@ -45,6 +45,9 @@ public class ServerEntryConverter implements Converter {
         if (serverEntry.getServerType() != null) {
             map.put("server_type", serverEntry.getServerType().toString());
         }
+        if (!serverEntry.useNetworkSettings()) {
+            map.put("use_network_settings", "false");
+        }
         return map;
     }
 
@@ -63,7 +66,8 @@ public class ServerEntryConverter implements Converter {
             address = (InetSocketAddress) inetConverter.fromConfig(InetSocketAddress.class, section.get("address"), null);
             publicAddress = (InetSocketAddress) inetConverter.fromConfig(InetSocketAddress.class, section.get("public_address"), null);
             serverType = (String) inetConverter.fromConfig(String.class, section.get("server_type"), null);
-            return new ServerEntry(section.get("name"), address, publicAddress, this.validateServerType(serverType));
+            boolean useNetworkSettings = this.parseBoolean(section.get("use_network_settings"), true);
+            return new ServerEntry(section.get("name"), address, publicAddress, this.validateServerType(serverType), useNetworkSettings);
         }
 
         if (object instanceof Map) {
@@ -72,7 +76,8 @@ public class ServerEntryConverter implements Converter {
                 address = (InetSocketAddress) inetConverter.fromConfig(InetSocketAddress.class, subMap.getValue().get("address"), null);
                 publicAddress = (InetSocketAddress) inetConverter.fromConfig(InetSocketAddress.class, subMap.getValue().get("public_address"), null);
                 serverType = (String) subMap.getValue().get("server_type");
-                return new ServerEntry(subMap.getKey(), address, publicAddress, this.validateServerType(serverType));
+                boolean useNetworkSettings = this.parseBoolean(subMap.getValue().get("use_network_settings"), true);
+                return new ServerEntry(subMap.getKey(), address, publicAddress, this.validateServerType(serverType), useNetworkSettings);
             }
         }
         throw new IllegalArgumentException("ServerInfoConverter#fromConfig cannot parse obj: " + object.getClass().getName());
@@ -83,6 +88,19 @@ public class ServerEntryConverter implements Converter {
             return ServerInfoType.BEDROCK.getIdentifier();
         }
         return serverType;
+    }
+
+    private boolean parseBoolean(Object value, boolean defaultValue) {
+        if (value == null) {
+            return defaultValue;
+        }
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        if (value instanceof String) {
+            return Boolean.parseBoolean((String) value);
+        }
+        return defaultValue;
     }
 
     @Override

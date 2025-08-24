@@ -38,13 +38,24 @@ import java.util.concurrent.TimeUnit;
 
 public class BedrockServerInfo extends ServerInfo {
 
+    private final boolean useNetworkSettings;
+
     public BedrockServerInfo(String serverName, InetSocketAddress address, InetSocketAddress publicAddress) {
+        this(serverName, address, publicAddress, true);
+    }
+
+    public BedrockServerInfo(String serverName, InetSocketAddress address, InetSocketAddress publicAddress, boolean useNetworkSettings) {
         super(serverName, address, publicAddress);
+        this.useNetworkSettings = useNetworkSettings;
     }
 
     @Override
     public ServerInfoType getServerType() {
         return ServerInfoType.BEDROCK;
+    }
+
+    public boolean useNetworkSettings() {
+        return this.useNetworkSettings;
     }
 
     @Override
