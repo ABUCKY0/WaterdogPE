@@ -34,6 +34,7 @@ import dev.waterdog.waterdogpe.command.CommandSender;
 import dev.waterdog.waterdogpe.event.defaults.*;
 import dev.waterdog.waterdogpe.logger.MainLogger;
 import dev.waterdog.waterdogpe.network.serverinfo.ServerInfo;
+import dev.waterdog.waterdogpe.network.serverinfo.BedrockServerInfo;
 import dev.waterdog.waterdogpe.network.protocol.ProtocolVersion;
 import dev.waterdog.waterdogpe.network.protocol.rewrite.RewriteMaps;
 import dev.waterdog.waterdogpe.network.protocol.rewrite.types.RewriteData;
@@ -286,7 +287,14 @@ public class ProxiedPlayer implements CommandSender {
         }
 
         if (this.getProtocol().isAfterOrEqual(ProtocolVersion.MINECRAFT_PE_1_19_30)) {
-            connection.setPacketHandler(new CompressionInitHandler(this, connection, handler));
+            boolean useNetworkSettings = true;
+            
+            // Check if the server is a BedrockServerInfo and supports network settings
+            if (connection.getServerInfo() instanceof BedrockServerInfo bedrockServerInfo) {
+                useNetworkSettings = bedrockServerInfo.useNetworkSettings();
+            }
+            
+            connection.setPacketHandler(new CompressionInitHandler(this, connection, handler, useNetworkSettings));
         } else {
             connection.setPacketHandler(handler);
             connection.sendPacket(this.loginData.getLoginPacket());

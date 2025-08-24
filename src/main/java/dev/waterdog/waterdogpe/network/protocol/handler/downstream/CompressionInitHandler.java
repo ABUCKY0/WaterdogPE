@@ -26,14 +26,26 @@ import org.cloudburstmc.protocol.common.PacketSignal;
 public class CompressionInitHandler extends AbstractDownstreamHandler {
 
     private final BedrockPacketHandler nextHandler;
+    private final boolean useNetworkSettings;
 
     public CompressionInitHandler(ProxiedPlayer player, ClientConnection connection, BedrockPacketHandler nextHandler) {
+        this(player, connection, nextHandler, true);
+    }
+
+    public CompressionInitHandler(ProxiedPlayer player, ClientConnection connection, BedrockPacketHandler nextHandler, boolean useNetworkSettings) {
         super(player, connection);
         this.nextHandler = nextHandler;
+        this.useNetworkSettings = useNetworkSettings;
 
-        RequestNetworkSettingsPacket packet = new RequestNetworkSettingsPacket();
-        packet.setProtocolVersion(player.getProtocol().getProtocol());
-        connection.sendPacket(packet);
+        if (useNetworkSettings) {
+            RequestNetworkSettingsPacket packet = new RequestNetworkSettingsPacket();
+            packet.setProtocolVersion(player.getProtocol().getProtocol());
+            connection.sendPacket(packet);
+        } else {
+            // Skip network settings negotiation and proceed directly
+            connection.setPacketHandler(nextHandler);
+            connection.sendPacket(this.player.getLoginData().getLoginPacket());
+        }
     }
 
     @Override
@@ -43,6 +55,11 @@ public class CompressionInitHandler extends AbstractDownstreamHandler {
 
     @Override
     public PacketSignal handle(NetworkSettingsPacket packet) {
+        if (!useNetworkSettings) {
+            // This should not happen if network settings are disabled, but handle gracefully
+            return Signals.CANCEL;
+        }
+        
         CompressionType compression = CompressionType.fromBedrockCompression(packet.getCompressionAlgorithm());
         this.connection.setCompression(compression);
         this.connection.setPacketHandler(nextHandler);

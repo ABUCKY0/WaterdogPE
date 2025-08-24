@@ -31,8 +31,13 @@ public class ServerEntry {
     private final InetSocketAddress address;
     private final InetSocketAddress publicAddress;
     private final String serverType;
+    private final boolean useNetworkSettings;
 
     public ServerEntry(String serverName, InetSocketAddress address, InetSocketAddress publicAddress, String serverType) {
+        this(serverName, address, publicAddress, serverType, true);
+    }
+
+    public ServerEntry(String serverName, InetSocketAddress address, InetSocketAddress publicAddress, String serverType, boolean useNetworkSettings) {
         Preconditions.checkArgument(serverName != null && !serverName.isEmpty(), "Server name is not valid");
         Preconditions.checkNotNull(address, "Server address can not be null");
         Preconditions.checkNotNull(serverType, "ServerInfoType can not be null");
@@ -40,6 +45,7 @@ public class ServerEntry {
         this.address = address;
         this.publicAddress = publicAddress;
         this.serverType = serverType;
+        this.useNetworkSettings = useNetworkSettings;
     }
 
     public String getServerName() {
@@ -56,6 +62,10 @@ public class ServerEntry {
 
     public String getServerType() {
         return this.serverType;
+    }
+
+    public boolean useNetworkSettings() {
+        return this.useNetworkSettings;
     }
 
     public ServerInfoType getServerInfoType() {

@@ -69,6 +69,13 @@ public class ServerInfoMap {
     }
 
     public ServerInfo fromServerEntry(ServerEntry entry) {
-        return this.createServerInfo(entry.getServerName(), entry.getAddress(), entry.getPublicAddress(), entry.getServerInfoType());
+        ServerInfoType serverType = entry.getServerInfoType();
+        
+        // Special handling for Bedrock servers with network settings flag
+        if (serverType == ServerInfoType.BEDROCK) {
+            return new BedrockServerInfo(entry.getServerName(), entry.getAddress(), entry.getPublicAddress(), entry.useNetworkSettings());
+        }
+        
+        return this.createServerInfo(entry.getServerName(), entry.getAddress(), entry.getPublicAddress(), serverType);
     }
 }
