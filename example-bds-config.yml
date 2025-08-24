@@ -1,0 +1,33 @@
+# Example Server Configuration for BDS Compatibility
+
+# config.yml example showing how to configure servers for BDS compatibility
+
+servers:
+  # Bedrock Dedicated Server (BDS) - requires use_network_settings: false
+  my-bds-server:
+    address: 127.0.0.1:19132
+    server_type: bedrock
+    use_network_settings: false  # Required for BDS compatibility
+
+  # Another BDS server
+  survival-bds:
+    address: bds.example.com:19133
+    server_type: bedrock
+    use_network_settings: false
+
+  # Regular Bedrock server (PocketMine-MP, Nukkit, etc.) - works normally
+  creative-server:
+    address: 127.0.0.1:19134
+    server_type: bedrock
+    # use_network_settings defaults to true, so no need to specify
+
+  # Another regular server
+  lobby:
+    address: lobby.example.com:19135
+    server_type: bedrock
+    use_network_settings: true  # Explicitly enabled (this is the default)
+
+# Notes:
+# - Set use_network_settings: false ONLY for Bedrock Dedicated Server (BDS)
+# - For all other server types (PocketMine-MP, Nukkit, etc.), leave it as default (true)
+# - The default value is true, so existing configs will continue working
