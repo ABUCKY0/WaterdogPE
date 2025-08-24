@@ -14,7 +14,7 @@ servers:
     address: bds.example.com:19133
     server_type: bedrock
     use_network_settings: false
-
+ 
   # Regular Bedrock server (PocketMine-MP, Nukkit, etc.) - works normally
   creative-server:
     address: 127.0.0.1:19134
