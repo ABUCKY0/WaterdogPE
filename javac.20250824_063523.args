@@ -1,5 +1,0 @@
--cp
-src/main/java:src/main/resources
--d
-/tmp/test-compile
-src/main/java/dev/waterdog/waterdogpe/network/serverinfo/BedrockServerInfo.java
